@@ -36,19 +36,25 @@ class ExchangeRepositoryTest {
         val exchangeInfoData = ExchangeInfoData(
             id = 1,
             name = "Binance",
+            symbol = "BNB",
             slug = "binance",
             logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
+            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
             urls = ExchangeUrls(
                 website = listOf("https://binance.com"),
+                technicalDoc = null,
                 twitter = null,
-                blog = null,
+                reddit = null,
+                messageBoard = null,
+                announcement = null,
                 chat = null,
-                fee = null
+                explorer = null,
+                sourceCode = null
             ),
-            makerFee = 0.1,
-            takerFee = 0.1
+            category = "Exchange",
+            platform = null
         )
         
         val response = ExchangeDetailResponse(
@@ -59,13 +65,15 @@ class ExchangeRepositoryTest {
         val expectedDTO = ExchangeDetailDTO(
             id = 1,
             name = "Binance",
+            symbol = "BNB",
             slug = "binance",
             logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
+            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
             websiteUrl = "https://binance.com",
-            makerFee = 0.1,
-            takerFee = 0.1
+            category = "Exchange",
+            platform = null
         )
         
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response

@@ -30,40 +30,46 @@ class ExchangeDataSourceTest {
         val expectedData = ExchangeInfoData(
             id = 1,
             name = "Binance",
+            symbol = "BNB",
             slug = "binance",
             logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
+            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
             urls = ExchangeUrls(
                 website = listOf("https://binance.com"),
+                technicalDoc = null,
                 twitter = null,
-                blog = null,
+                reddit = null,
+                messageBoard = null,
+                announcement = null,
                 chat = null,
-                fee = null
+                explorer = null,
+                sourceCode = null
             ),
-            makerFee = 0.1,
-            takerFee = 0.1
+            category = "Exchange",
+            platform = null
         )
         val expectedResponse = ExchangeDetailResponse(
             status = null,
             data = mapOf("1" to expectedData)
         )
         
-        coEvery { api.getExchangeInfo(exchangeId) } returns expectedResponse
+        coEvery { api.getCryptocurrencyInfo(exchangeId) } returns expectedResponse
 
         // When
         val result = dataSource.getExchangeInfo(exchangeId)
 
         // Then
         assertEquals(expectedResponse, result)
-        coVerify(exactly = 1) { api.getExchangeInfo(exchangeId) }
+        coVerify(exactly = 1) { api.getCryptocurrencyInfo(exchangeId) }
     }
 
     @Test(expected = Exception::class)
     fun `getExchangeInfo should propagate exception when api fails`() = runTest {
         // Given
         val exchangeId = 1
-        coEvery { api.getExchangeInfo(exchangeId) } throws Exception("API error")
+        coEvery { api.getCryptocurrencyInfo(exchangeId) } throws Exception("API error")
 
         // When
         dataSource.getExchangeInfo(exchangeId)

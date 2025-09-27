@@ -29,13 +29,15 @@ class GetExchangeDetailsUseCaseTest {
         val expectedDTO = ExchangeDetailDTO(
             id = 1,
             name = "Binance",
+            symbol = "BNB",
             slug = "binance",
             logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
+            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
             websiteUrl = "https://binance.com",
-            makerFee = 0.1,
-            takerFee = 0.1
+            category = "Exchange",
+            platform = null
         )
         
         coEvery { repository.getExchangeDetails(exchangeId) } returns expectedDTO

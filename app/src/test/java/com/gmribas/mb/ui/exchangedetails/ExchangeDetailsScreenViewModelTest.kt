@@ -54,13 +54,15 @@ class ExchangeDetailsScreenViewModelTest {
         val exchangeDTO = ExchangeDetailDTO(
             id = 1,
             name = "Binance",
+            symbol = "BNB",
             slug = "binance",
             logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
+            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
             websiteUrl = "https://binance.com",
-            makerFee = 0.1,
-            takerFee = 0.1
+            category = "Exchange",
+            platform = null
         )
         
         coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Success(exchangeDTO)
@@ -113,13 +115,15 @@ class ExchangeDetailsScreenViewModelTest {
         val exchangeDTO = ExchangeDetailDTO(
             id = 1,
             name = "Binance",
+            symbol = "BNB",
             slug = "binance",
             logo = null,
             description = null,
+            dateAdded = null,
             dateLaunched = null,
             websiteUrl = null,
-            makerFee = null,
-            takerFee = null
+            category = null,
+            platform = null
         )
         
         coEvery { getExchangeDetailsUseCase(exchangeId) } returnsMany listOf(

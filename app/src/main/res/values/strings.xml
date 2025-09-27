@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">MB Desafio</string>
+    
+    <!-- App Info -->
+    <string name="app_subtitle">Counter-Strike TV</string>
+    
+    <!-- Splash Screen -->
+    <string name="cstv_logo_description">CSTV Logo</string>
+    
+    <!-- Matches Screen -->
+    <string name="matches_title">Matches</string>
+    <string name="loading_matches">Loading matches...</string>
+    <string name="loading_more_matches">Loading more matches...</string>
+    <string name="error_prefix">Error: </string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="no_matches_found">No matches found</string>
+    <string name="welcome_message">Welcome to CSTV</string>
+    
+    <!-- Match Item -->
+    <string name="live_indicator">NOW</string>
+    <string name="versus_text">VS</string>
+    <string name="team_logo_description">%1$s logo</string>
+    <string name="league_separator"> • </string>
+    
+    <!-- Date labels -->
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="date_tbd">TBD</string>
+    
+    <!-- Match Details Screen -->
+    <string name="match_details_title">Match Details</string>
+    <string name="back">Back</string>
+    <string name="live">LIVE</string>
+    <string name="players">Players</string>
+    
+    <!-- Exchange List Screen -->
+    <string name="exchange_title">Cryptocurrencies</string>
+    <string name="crypto_logo_description">%1$s logo</string>
+    <string name="volume_label">Vol:</string>
+    <string name="loading_cryptocurrencies">Loading cryptocurrencies...</string>
+    <string name="no_cryptocurrencies_found">No cryptocurrencies found</string>
+    
+    <!-- Exchange Details Screen -->
+    <string name="exchange_details_title">Cryptocurrency Details</string>
+    <string name="exchange_logo_description">%1$s logo</string>
+    <string name="back_button_description">Go back</string>
+    <string name="description_label">Description</string>
+    <string name="details_label">Details</string>
+    <string name="website_label">Website</string>
+    <string name="date_added_label">Date Added</string>
+    <string name="date_launched_label">Date Launched</string>
+    <string name="platform_label">Platform</string>
+</resources>
