@@ -1,4 +1,4 @@
-package com.gmribas.mb.ui.exchangedetails
+package com.gmribas.mb.ui.criptodetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +36,7 @@ import com.gmribas.mb.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExchangeDetailsScreen(
+fun CriptoDetailsScreen(
     state: ExchangeDetailsScreenState,
     onEvent: (ExchangeDetailsScreenEvent) -> Unit,
     onBackClick: () -> Unit

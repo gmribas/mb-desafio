@@ -5,12 +5,14 @@ import com.gmribas.mb.data.datasource.exchange.IExchangeDataSource
 import com.gmribas.mb.data.datasource.exchangeassets.IExchangeAssetsDataSource
 import com.gmribas.mb.repository.cryptocurrency.CryptocurrencyRepository
 import com.gmribas.mb.repository.cryptocurrency.ICryptocurrencyRepository
+import com.gmribas.mb.repository.cryptocurrency.CriptoRepository
+import com.gmribas.mb.repository.cryptocurrency.ICriptoRepository
 import com.gmribas.mb.repository.exchange.ExchangeRepository
 import com.gmribas.mb.repository.exchange.IExchangeRepository
 import com.gmribas.mb.repository.mapper.CryptocurrencyListingMapper
-import com.gmribas.mb.repository.mapper.CryptocurrencyMapper
-import com.gmribas.mb.repository.mapper.ExchangeDetailMapper
+import com.gmribas.mb.repository.mapper.CriptoDetailMapper
 import com.gmribas.mb.repository.mapper.ExchangeAssetMapper
+import com.gmribas.mb.repository.mapper.ExchangeListingMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,15 +32,24 @@ internal object RepositoryModule {
     )
     
     @Provides
-    fun provideExchangeRepository(
-        dataSource: IExchangeDataSource,
+    fun provideCriptoRepository(
+        dataSource: ICryptocurrencyDataSource,
         assetsDataSource: IExchangeAssetsDataSource,
-        mapper: ExchangeDetailMapper,
+        mapper: CriptoDetailMapper,
         assetMapper: ExchangeAssetMapper
-    ): IExchangeRepository = ExchangeRepository(
+    ): ICriptoRepository = CriptoRepository(
         dataSource = dataSource,
         assetsDataSource = assetsDataSource,
         mapper = mapper, 
         assetMapper = assetMapper
+    )
+
+    @Provides
+    fun provideExchangeRepository(
+        dataSource: IExchangeDataSource,
+        listingMapper: ExchangeListingMapper
+    ): IExchangeRepository = ExchangeRepository(
+        dataSource = dataSource,
+        listingMapper = listingMapper
     )
 }

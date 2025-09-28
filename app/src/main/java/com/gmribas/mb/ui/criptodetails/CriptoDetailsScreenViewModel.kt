@@ -1,4 +1,4 @@
-package com.gmribas.mb.ui.exchangedetails
+package com.gmribas.mb.ui.criptodetails
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ExchangeDetailsScreenViewModel @Inject constructor(
+class CriptoDetailsScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getCriptoDetailsUseCase: GetCriptoDetailsUseCase,
     private val getExchangeAssetsUseCase: GetExchangeAssetsUseCase

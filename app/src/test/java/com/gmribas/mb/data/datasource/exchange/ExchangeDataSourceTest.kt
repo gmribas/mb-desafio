@@ -1,9 +1,9 @@
 package com.gmribas.mb.data.datasource.exchange
 
 import com.gmribas.mb.data.api.CoinMarketCapApi
-import com.gmribas.mb.data.model.ExchangeDetailResponse
-import com.gmribas.mb.data.model.ExchangeInfoData
-import com.gmribas.mb.data.model.ExchangeUrls
+import com.gmribas.mb.data.model.CriptoDetailResponse
+import com.gmribas.mb.data.model.CriptoInfoData
+import com.gmribas.mb.data.model.CriptoUrls
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -27,7 +27,7 @@ class ExchangeDataSourceTest {
     fun `getExchangeInfo should call api and return response`() = runTest {
         // Given
         val exchangeId = 1
-        val expectedData = ExchangeInfoData(
+        val expectedData = CriptoInfoData(
             id = 1,
             name = "Binance",
             symbol = "BNB",
@@ -36,7 +36,7 @@ class ExchangeDataSourceTest {
             description = "Leading cryptocurrency exchange",
             dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
-            urls = ExchangeUrls(
+            urls = CriptoUrls(
                 website = listOf("https://binance.com"),
                 technicalDoc = null,
                 twitter = null,
@@ -50,7 +50,7 @@ class ExchangeDataSourceTest {
             category = "Exchange",
             platform = null
         )
-        val expectedResponse = ExchangeDetailResponse(
+        val expectedResponse = CriptoDetailResponse(
             status = null,
             data = mapOf("1" to expectedData)
         )

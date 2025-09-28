@@ -8,19 +8,13 @@
     
     <!-- Splash Screen -->
     <string name="mb_logo_description">MB Logo</string>
-
-    <!-- Date labels -->
-    <string name="date_today">Today</string>
-    <string name="date_tomorrow">Tomorrow</string>
-    <string name="date_tbd">TBD</string>
     
     <!-- Exchange List Screen -->
-    <string name="exchange_title">Cryptocurrencies</string>
+    <string name="exchange_title">Exchanges</string>
     <string name="crypto_logo_description">%1$s logo</string>
     <string name="volume_label">Vol:</string>
-    <string name="loading_cryptocurrencies">Loading cryptocurrencies...</string>
-    <string name="no_cryptocurrencies_found">No cryptocurrencies found</string>
-    
+    <string name="date_added">Lancada</string>
+
     <!-- Exchange Details Screen -->
     <string name="exchange_details_title">Cryptocurrency Details</string>
     <string name="exchange_logo_description">%1$s logo</string>

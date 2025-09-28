@@ -2,14 +2,14 @@ package com.gmribas.mb.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ExchangeDetailResponse(
+data class CriptoDetailResponse(
     @SerializedName("status")
-    val status: ExchangeStatusResponse?,
+    val status: StatusResponse?,
     @SerializedName("data")
-    val data: Map<String, ExchangeInfoData>?
+    val data: Map<String, CriptoInfoData>?
 )
 
-data class ExchangeInfoData(
+data class CriptoInfoData(
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
@@ -27,14 +27,14 @@ data class ExchangeInfoData(
     @SerializedName("date_launched")
     val dateLaunched: String?,
     @SerializedName("urls")
-    val urls: ExchangeUrls?,
+    val urls: CriptoUrls?,
     @SerializedName("category")
     val category: String?,
     @SerializedName("platform")
     val platform: PlatformInfo?
 )
 
-data class ExchangeUrls(
+data class CriptoUrls(
     @SerializedName("website")
     val website: List<String>?,
     @SerializedName("technical_doc")
@@ -68,7 +68,7 @@ data class PlatformInfo(
     val tokenAddress: String?
 )
 
-data class ExchangeStatusResponse(
+data class StatusResponse(
     @SerializedName("timestamp")
     val timestamp: String?,
     @SerializedName("error_code")

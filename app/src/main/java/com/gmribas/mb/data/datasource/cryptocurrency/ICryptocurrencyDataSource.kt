@@ -1,5 +1,6 @@
 package com.gmribas.mb.data.datasource.cryptocurrency
 
+import com.gmribas.mb.data.model.CriptoDetailResponse
 import com.gmribas.mb.data.model.CryptocurrencyListingResponse
 
 interface ICryptocurrencyDataSource {
@@ -10,4 +11,7 @@ interface ICryptocurrencyDataSource {
         sort: String = "market_cap",
         sortDir: String = "desc"
     ): CryptocurrencyListingResponse
+
+
+    suspend fun getExchangeInfo(id: Int): CriptoDetailResponse//fixme
 }

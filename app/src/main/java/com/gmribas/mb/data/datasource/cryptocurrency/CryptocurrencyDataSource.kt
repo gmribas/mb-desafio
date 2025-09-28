@@ -1,6 +1,7 @@
 package com.gmribas.mb.data.datasource.cryptocurrency
 
 import com.gmribas.mb.data.api.CoinMarketCapApi
+import com.gmribas.mb.data.model.CriptoDetailResponse
 import com.gmribas.mb.data.model.CryptocurrencyListingResponse
 
 class CryptocurrencyDataSource(
@@ -9,6 +10,10 @@ class CryptocurrencyDataSource(
     
     companion object {
         const val PAGE_SIZE = 20
+    }
+
+    override suspend fun getExchangeInfo(id: Int): CriptoDetailResponse {
+        return api.getCryptocurrencyInfo(id)
     }
 
     override suspend fun getLatestListings(

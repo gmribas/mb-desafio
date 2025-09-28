@@ -1,11 +1,12 @@
 package com.gmribas.mb.repository.exchange
 
 import com.gmribas.mb.data.datasource.exchange.IExchangeDataSource
-import com.gmribas.mb.data.model.ExchangeDetailResponse
-import com.gmribas.mb.data.model.ExchangeInfoData
-import com.gmribas.mb.data.model.ExchangeUrls
+import com.gmribas.mb.data.model.CriptoDetailResponse
+import com.gmribas.mb.data.model.CriptoInfoData
+import com.gmribas.mb.data.model.CriptoUrls
+import com.gmribas.mb.repository.cryptocurrency.CriptoRepository
 import com.gmribas.mb.repository.dto.ExchangeDetailDTO
-import com.gmribas.mb.repository.mapper.ExchangeDetailMapper
+import com.gmribas.mb.repository.mapper.CriptoDetailMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -19,21 +20,21 @@ import org.junit.Test
 class ExchangeRepositoryTest {
 
     private lateinit var dataSource: IExchangeDataSource
-    private lateinit var mapper: ExchangeDetailMapper
-    private lateinit var repository: ExchangeRepository
+    private lateinit var mapper: CriptoDetailMapper
+    private lateinit var repository: CriptoRepository
 
     @Before
     fun setUp() {
         dataSource = mockk()
         mapper = mockk()
-        repository = ExchangeRepository(dataSource, mapper)
+        repository = CriptoRepository(dataSource, mapper)
     }
 
     @Test
     fun `getExchangeDetails should fetch data and map to DTO`() = runTest {
         // Given
         val exchangeId = 1
-        val exchangeInfoData = ExchangeInfoData(
+        val criptoInfoData = CriptoInfoData(
             id = 1,
             name = "Binance",
             symbol = "BNB",
@@ -42,7 +43,7 @@ class ExchangeRepositoryTest {
             description = "Leading cryptocurrency exchange",
             dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
-            urls = ExchangeUrls(
+            urls = CriptoUrls(
                 website = listOf("https://binance.com"),
                 technicalDoc = null,
                 twitter = null,
@@ -57,9 +58,9 @@ class ExchangeRepositoryTest {
             platform = null
         )
         
-        val response = ExchangeDetailResponse(
+        val response = CriptoDetailResponse(
             status = null,
-            data = mapOf("1" to exchangeInfoData)
+            data = mapOf("1" to criptoInfoData)
         )
         
         val expectedDTO = ExchangeDetailDTO(
@@ -77,22 +78,22 @@ class ExchangeRepositoryTest {
         )
         
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response
-        every { mapper.toDTO(exchangeInfoData) } returns expectedDTO
+        every { mapper.toDTO(criptoInfoData) } returns expectedDTO
 
         // When
-        val result = repository.getExchangeDetails(exchangeId)
+        val result = repository.getCriptoDetails(exchangeId)
 
         // Then
         assertEquals(expectedDTO, result)
         coVerify(exactly = 1) { dataSource.getExchangeInfo(exchangeId) }
-        verify(exactly = 1) { mapper.toDTO(exchangeInfoData) }
+        verify(exactly = 1) { mapper.toDTO(criptoInfoData) }
     }
 
     @Test(expected = Exception::class)
     fun `getExchangeDetails should throw exception when no data found`() = runTest {
         // Given
         val exchangeId = 1
-        val response = ExchangeDetailResponse(
+        val response = CriptoDetailResponse(
             status = null,
             data = emptyMap()
         )
@@ -100,7 +101,7 @@ class ExchangeRepositoryTest {
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response
 
         // When
-        repository.getExchangeDetails(exchangeId)
+        repository.getCriptoDetails(exchangeId)
         
         // Then - exception is expected
     }
@@ -109,7 +110,7 @@ class ExchangeRepositoryTest {
     fun `getExchangeDetails should throw exception when data is null`() = runTest {
         // Given
         val exchangeId = 1
-        val response = ExchangeDetailResponse(
+        val response = CriptoDetailResponse(
             status = null,
             data = null
         )
@@ -117,7 +118,7 @@ class ExchangeRepositoryTest {
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response
 
         // When
-        repository.getExchangeDetails(exchangeId)
+        repository.getCriptoDetails(exchangeId)
         
         // Then - exception is expected
     }

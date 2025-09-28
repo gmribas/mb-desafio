@@ -1,7 +1,7 @@
 package com.gmribas.mb.domain
 
 import com.gmribas.mb.repository.dto.ExchangeDetailDTO
-import com.gmribas.mb.repository.exchange.IExchangeRepository
+import com.gmribas.mb.repository.cryptocurrency.ICriptoRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -13,13 +13,13 @@ import org.junit.Test
 
 class GetExchangeDetailsUseCaseTest {
 
-    private lateinit var repository: IExchangeRepository
-    private lateinit var useCase: GetExchangeDetailsUseCase
+    private lateinit var repository: ICriptoRepository
+    private lateinit var useCase: GetCriptoDetailsUseCase
 
     @Before
     fun setUp() {
         repository = mockk()
-        useCase = GetExchangeDetailsUseCase(repository)
+        useCase = GetCriptoDetailsUseCase(repository)
     }
 
     @Test
@@ -40,7 +40,7 @@ class GetExchangeDetailsUseCaseTest {
             platform = null
         )
         
-        coEvery { repository.getExchangeDetails(exchangeId) } returns expectedDTO
+        coEvery { repository.getCriptoDetails(exchangeId) } returns expectedDTO
 
         // When
         val result = useCase(exchangeId)
@@ -48,7 +48,7 @@ class GetExchangeDetailsUseCaseTest {
         // Then
         assertTrue(result is UseCaseResult.Success)
         assertEquals(expectedDTO, (result as UseCaseResult.Success).data)
-        coVerify(exactly = 1) { repository.getExchangeDetails(exchangeId) }
+        coVerify(exactly = 1) { repository.getCriptoDetails(exchangeId) }
     }
 
     @Test
@@ -57,7 +57,7 @@ class GetExchangeDetailsUseCaseTest {
         val exchangeId = 1
         val exception = Exception("Repository error")
         
-        coEvery { repository.getExchangeDetails(exchangeId) } throws exception
+        coEvery { repository.getCriptoDetails(exchangeId) } throws exception
 
         // When
         val result = useCase(exchangeId)
@@ -65,7 +65,7 @@ class GetExchangeDetailsUseCaseTest {
         // Then
         assertTrue(result is UseCaseResult.Error)
         assertEquals(exception, (result as UseCaseResult.Error).error)
-        coVerify(exactly = 1) { repository.getExchangeDetails(exchangeId) }
+        coVerify(exactly = 1) { repository.getCriptoDetails(exchangeId) }
     }
 
     @Test
@@ -74,7 +74,7 @@ class GetExchangeDetailsUseCaseTest {
         val exchangeId = 999
         val specificError = IllegalArgumentException("Exchange not found")
         
-        coEvery { repository.getExchangeDetails(exchangeId) } throws specificError
+        coEvery { repository.getCriptoDetails(exchangeId) } throws specificError
 
         // When
         val result = useCase(exchangeId)

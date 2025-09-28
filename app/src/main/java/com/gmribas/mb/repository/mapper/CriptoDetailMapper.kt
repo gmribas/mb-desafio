@@ -1,13 +1,13 @@
 package com.gmribas.mb.repository.mapper
 
-import com.gmribas.mb.data.model.ExchangeInfoData
-import com.gmribas.mb.repository.dto.ExchangeDetailDTO
+import com.gmribas.mb.data.model.CriptoInfoData
+import com.gmribas.mb.repository.dto.CriptoDetailDTO
 import javax.inject.Inject
 
-class ExchangeDetailMapper @Inject constructor() {
+class CriptoDetailMapper @Inject constructor() {
     
-    fun toDTO(exchangeInfo: ExchangeInfoData): ExchangeDetailDTO {
-        return ExchangeDetailDTO(
+    fun toDTO(exchangeInfo: CriptoInfoData): CriptoDetailDTO {
+        return CriptoDetailDTO(
             id = exchangeInfo.id,
             name = exchangeInfo.name,
             symbol = exchangeInfo.symbol,

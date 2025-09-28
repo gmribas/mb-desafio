@@ -1,14 +1,14 @@
-package com.gmribas.mb.ui.exchangedetails.model
+package com.gmribas.mb.ui.criptodetails.model
 
 import com.gmribas.mb.repository.dto.ExchangeAssetDTO
 import com.gmribas.mb.repository.dto.CriptoDetailDTO
 
-sealed interface ExchangeDetailsScreenState {
-    data object Loading : ExchangeDetailsScreenState
+sealed interface CriptoDetailsScreenState {
+    data object Loading : CriptoDetailsScreenState
     data class Success(
         val cripto: CriptoDetailDTO,
         val assets: List<ExchangeAssetDTO> = emptyList(),
         val assetsLoading: Boolean = false
-    ) : ExchangeDetailsScreenState
-    data class Error(val message: String) : ExchangeDetailsScreenState
+    ) : CriptoDetailsScreenState
+    data class Error(val message: String) : CriptoDetailsScreenState
 }

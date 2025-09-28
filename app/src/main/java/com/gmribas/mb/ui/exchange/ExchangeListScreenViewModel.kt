@@ -4,17 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.gmribas.mb.domain.GetCryptocurrenciesUseCase
-import com.gmribas.mb.repository.dto.CryptocurrencyDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import com.gmribas.mb.domain.GetExchangesUseCase
+import com.gmribas.mb.repository.dto.ExchangeDTO
 
 @HiltViewModel
 class ExchangeListScreenViewModel @Inject constructor(
-    private val getCryptocurrenciesUseCase: GetCryptocurrenciesUseCase
+    private val getExchangesUseCase: GetExchangesUseCase,
 ) : ViewModel() {
 
-    internal val cryptocurrenciesPagingFlow: Flow<PagingData<CryptocurrencyDTO>> = getCryptocurrenciesUseCase()
+    internal val exchangesPagingFlow: Flow<PagingData<ExchangeDTO>> = getExchangesUseCase()
         .cachedIn(viewModelScope)
 }

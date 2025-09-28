@@ -1,8 +1,7 @@
 package com.gmribas.mb.ui.exchangedetails
 
 import androidx.lifecycle.SavedStateHandle
-import app.cash.turbine.test
-import com.gmribas.mb.domain.GetExchangeDetailsUseCase
+import com.gmribas.mb.domain.GetCriptoDetailsUseCase
 import com.gmribas.mb.domain.UseCaseResult
 import com.gmribas.mb.repository.dto.ExchangeDetailDTO
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
@@ -27,7 +26,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ExchangeDetailsScreenViewModelTest {
 
-    private lateinit var getExchangeDetailsUseCase: GetExchangeDetailsUseCase
+    private lateinit var getCriptoDetailsUseCase: GetCriptoDetailsUseCase
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var viewModel: ExchangeDetailsScreenViewModel
     private val testDispatcher = StandardTestDispatcher()

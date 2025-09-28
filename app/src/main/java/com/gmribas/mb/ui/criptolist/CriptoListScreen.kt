@@ -1,4 +1,4 @@
-package com.gmribas.mb.ui.exchange
+package com.gmribas.mb.ui.criptolist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +22,10 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.gmribas.mb.R
-import com.gmribas.mb.repository.dto.ExchangeDTO
+import com.gmribas.mb.repository.dto.CryptocurrencyDTO
 import com.gmribas.mb.ui.common.ErrorContent
 import com.gmribas.mb.ui.common.LoadingContent
+import com.gmribas.mb.ui.criptolist.components.CriptoItem
 import com.gmribas.mb.ui.exchange.components.ExchangeItem
 import com.gmribas.mb.ui.theme.SPACING_16
 import com.gmribas.mb.ui.theme.SPACING_20
@@ -33,16 +34,16 @@ import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExchangeListScreen(
-    exchangesPagingFlow: Flow<PagingData<ExchangeDTO>>,
-    onItemClick: (ExchangeDTO) -> Unit,
+fun CriptoListScreen(
+    cryptocurrenciesPagingFlow: Flow<PagingData<CryptocurrencyDTO>>,
+    onItemClick: (CryptocurrencyDTO) -> Unit,
     onFinish: () -> Unit,
 ) {
     BackHandler {
         onFinish()
     }
 
-    val lazyPagingItems = exchangesPagingFlow.collectAsLazyPagingItems()
+    val lazyPagingItems = cryptocurrenciesPagingFlow.collectAsLazyPagingItems()
     val isRefreshing = lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount > 0
 
     Column(
@@ -97,8 +98,8 @@ fun ExchangeListScreen(
                         ) { index ->
                             val cryptocurrency = lazyPagingItems[index]
                             cryptocurrency?.let {
-                                ExchangeItem(
-                                    exchange = it,
+                                CriptoItem(
+                                    cryptocurrency = it,
                                     onClick = { onItemClick(it) }
                                 )
                             }

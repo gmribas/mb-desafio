@@ -1,6 +1,5 @@
-package com.gmribas.mb.ui.exchange.components
+package com.gmribas.mb.ui.criptolist.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -34,27 +32,31 @@ import com.gmribas.mb.core.extensions.formatAsPercentage
 import com.gmribas.mb.core.extensions.formatAsUSD
 import com.gmribas.mb.core.extensions.formatDateAdded
 import com.gmribas.mb.core.extensions.formatVolume
+import com.gmribas.mb.repository.dto.CryptocurrencyDTO
 import com.gmribas.mb.ui.theme.AccentGreen
 import com.gmribas.mb.ui.theme.AccentRed
-import com.gmribas.mb.ui.theme.SIZE_4
 import com.gmribas.mb.ui.theme.SIZE_12
 import com.gmribas.mb.ui.theme.SIZE_40
 import com.gmribas.mb.ui.theme.SIZE_80
 import com.gmribas.mb.ui.theme.SPACING_8
 import com.gmribas.mb.ui.theme.SPACING_12
-import com.gmribas.mb.ui.theme.SPACING_16
-import com.gmribas.mb.ui.theme.TextSecondary
 import androidx.compose.foundation.isSystemInDarkTheme
-import com.gmribas.mb.repository.dto.ExchangeDTO
 
+private const val COIN_ICON_PATH = "https://s2.coinmarketcap.com/static/img/coins/64x64/"
 @Composable
-fun ExchangeItem(
-    exchange: ExchangeDTO,
+fun CriptoItem(
+    cryptocurrency: CryptocurrencyDTO,
     onClick: () -> Unit,
 ) {
     val isDarkTheme = isSystemInDarkTheme()
     val secondaryTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
     val cardElevation = if (isDarkTheme) 2.dp else 4.dp
+    
+    val percentageColor = when {
+        cryptocurrency.percentChange24h > 0 -> AccentGreen
+        cryptocurrency.percentChange24h < 0 -> AccentRed
+        else -> secondaryTextColor
+    }
     
     Card(
         onClick = onClick,
@@ -82,11 +84,11 @@ fun ExchangeItem(
                 // Cryptocurrency Logo
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(exchange.logo)
+                        .data(COIN_ICON_PATH + "${cryptocurrency.id}.png")
                         .build(),
                     contentDescription = stringResource(
                         R.string.crypto_logo_description,
-                        exchange.name
+                        cryptocurrency.name
                     ),
                     modifier = Modifier
                         .size(SIZE_40)
@@ -101,7 +103,7 @@ fun ExchangeItem(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = exchange.name,
+                        text = cryptocurrency.name,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
@@ -112,7 +114,7 @@ fun ExchangeItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.date_added),
+                            text = cryptocurrency.symbol,
                             style = MaterialTheme.typography.bodySmall,
                             color = secondaryTextColor
                         )
@@ -122,7 +124,7 @@ fun ExchangeItem(
                             color = secondaryTextColor
                         )
                         Text(
-                            text = exchange.dateLaunched.formatDateAdded(),
+                            text = cryptocurrency.dateAdded.formatDateAdded(),
                             style = MaterialTheme.typography.bodySmall,
                             color = secondaryTextColor,
                             maxLines = 1,
@@ -137,9 +139,30 @@ fun ExchangeItem(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = exchange.spotVolumeUsd.formatAsUSD(),
+                    text = cryptocurrency.price.formatAsUSD(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.volume_label),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = secondaryTextColor
+                    )
+                    Spacer(modifier = Modifier.width(SPACING_8 / 2))
+                    Text(
+                        text = "$${cryptocurrency.volume24h.formatVolume()}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = secondaryTextColor
+                    )
+                }
+                Text(
+                    text = cryptocurrency.percentChange24h.formatAsPercentage(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = percentageColor,
                     fontWeight = FontWeight.Medium
                 )
             }
