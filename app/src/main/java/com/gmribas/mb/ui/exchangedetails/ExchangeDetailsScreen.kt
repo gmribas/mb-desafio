@@ -10,10 +10,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.gmribas.mb.R
+import com.gmribas.mb.core.extensions.formatAsUSD
 import com.gmribas.mb.core.extensions.formatDateAdded
+import com.gmribas.mb.core.extensions.openBrowser
+import com.gmribas.mb.repository.dto.ExchangeAssetDTO
 import com.gmribas.mb.repository.dto.ExchangeDetailDTO
 import com.gmribas.mb.ui.common.ErrorContent
 import com.gmribas.mb.ui.common.LoadingContent
@@ -39,16 +42,11 @@ import com.gmribas.mb.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExchangeDetailsScreen(
-    exchangeId: Int,
     state: ExchangeDetailsScreenState,
     onEvent: (ExchangeDetailsScreenEvent) -> Unit,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
-
-    LaunchedEffect(exchangeId) {
-        onEvent(ExchangeDetailsScreenEvent.LoadExchangeDetails(exchangeId))
-    }
 
     Scaffold(
         topBar = {
@@ -63,7 +61,7 @@ fun ExchangeDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back_button_description),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
@@ -96,9 +94,10 @@ fun ExchangeDetailsScreen(
                 is ExchangeDetailsScreenState.Success -> {
                     ExchangeDetailsContent(
                         exchange = state.exchange,
+                        assets = state.assets,
+                        assetsLoading = state.assetsLoading,
                         onWebsiteClick = { url ->
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            context.startActivity(intent)
+                            context.openBrowser(url)
                         }
                     )
                 }
@@ -110,6 +109,8 @@ fun ExchangeDetailsScreen(
 @Composable
 private fun ExchangeDetailsContent(
     exchange: ExchangeDetailDTO,
+    assets: List<ExchangeAssetDTO>,
+    assetsLoading: Boolean,
     onWebsiteClick: (String) -> Unit
 ) {
     Column(
@@ -144,7 +145,7 @@ private fun ExchangeDetailsContent(
                             exchange.name
                         ),
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(SIZE_80)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
@@ -177,6 +178,14 @@ private fun ExchangeDetailsContent(
                     )
                 }
             }
+        }
+        
+        // Assets Card
+        if (assets.isNotEmpty() || assetsLoading) {
+            AssetsCard(
+                assets = assets,
+                isLoading = assetsLoading
+            )
         }
         
         // Description Card
@@ -298,6 +307,108 @@ private fun DetailRow(
             textDecoration = if (isClickable) TextDecoration.Underline else TextDecoration.None,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun AssetsCard(
+    assets: List<ExchangeAssetDTO>,
+    isLoading: Boolean
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = SIZE_4)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(SPACING_16),
+            verticalArrangement = Arrangement.spacedBy(SPACING_12)
+        ) {
+            Text(
+                text = stringResource(R.string.assets_label),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold
+            )
+            
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(SIZE_64),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(SIZE_36),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else if (assets.isNotEmpty()) {
+                assets.take(5).forEach { asset ->
+                    AssetRow(asset = asset)
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.no_assets_available),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AssetRow(
+    asset: ExchangeAssetDTO
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(SPACING_12),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Asset logo
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(asset.logo)
+                    .build(),
+                contentDescription = asset.name,
+                modifier = Modifier
+                    .size(SIZE_36)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            
+            Column {
+                Text(
+                    text = asset.currencyName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = asset.symbol,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+        }
+        
+        Text(
+            text = asset.priceUsd.formatAsUSD(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = AccentGreen,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }

@@ -6,7 +6,9 @@ import com.gmribas.mb.data.model.CryptocurrencyListingResponse
 import com.gmribas.mb.repository.dto.CryptocurrencyDTO
 import com.gmribas.mb.repository.dto.CryptocurrencyListingDTO
 
-class CryptocurrencyMapper : IMapper<Cryptocurrency, CryptocurrencyDTO> {
+import javax.inject.Inject
+
+class CryptocurrencyMapper @Inject constructor() : IMapper<Cryptocurrency, CryptocurrencyDTO> {
     
     override fun toDTO(model: Cryptocurrency): CryptocurrencyDTO {
         val usdQuote = model.quote["USD"]
@@ -27,19 +29,6 @@ class CryptocurrencyMapper : IMapper<Cryptocurrency, CryptocurrencyDTO> {
             maxSupply = model.maxSupply,
             lastUpdated = model.lastUpdated,
             dateAdded = model.dateAdded
-        )
-    }
-
-}
-
-class CryptocurrencyListingMapper(
-    private val cryptocurrencyMapper: CryptocurrencyMapper
-) : IMapper<CryptocurrencyListingResponse, CryptocurrencyListingDTO> {
-    
-    override fun toDTO(model: CryptocurrencyListingResponse): CryptocurrencyListingDTO {
-        return CryptocurrencyListingDTO(
-            cryptocurrencies = model.data.map { cryptocurrencyMapper.toDTO(it) },
-            totalCount = model.status.totalCount
         )
     }
 

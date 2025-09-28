@@ -39,10 +39,9 @@ fun MbNavigation(
         
         composable(route = Screen.Exchange.route) {
             val viewModel: ExchangeListScreenViewModel = hiltViewModel()
-            val state by viewModel.state.collectAsState()
-            
+
             ExchangeListScreen(
-                state = state,
+                cryptocurrenciesPagingFlow = viewModel.cryptocurrenciesPagingFlow,
                 onItemClick = { cryptocurrency ->
                     navController.navigate(Screen.ExchangeDetails.createRoute(cryptocurrency.id))
                 },
@@ -53,13 +52,11 @@ fun MbNavigation(
         composable(
             route = Screen.ExchangeDetails.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
-        ) { backStackEntry ->
+        ) {
             val viewModel: ExchangeDetailsScreenViewModel = hiltViewModel()
             val state by viewModel.state.collectAsState()
-            val exchangeId = backStackEntry.arguments?.getInt("id") ?: 0
             
             ExchangeDetailsScreen(
-                exchangeId = exchangeId,
                 state = state,
                 onEvent = viewModel::onEvent,
                 onBackClick = {

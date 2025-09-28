@@ -1,8 +1,11 @@
 package com.gmribas.mb.ui.common
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,12 +18,15 @@ import com.gmribas.mb.ui.theme.SPACING_16
 
 @Composable
 fun ErrorContent(
-    error: String?, 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    error: String?,
+    retry: Boolean = false,
+    onRetry: () -> Unit = {},
 ) {
-    Box(
+    Column(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = stringResource(R.string.error_prefix) + (error ?: stringResource(R.string.error_unknown)),
@@ -29,5 +35,11 @@ fun ErrorContent(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(SPACING_16)
         )
+
+        if (retry) {
+            Button(onClick = onRetry) {
+                Text(text = stringResource(R.string.retry))
+            }
+        }
     }
 }

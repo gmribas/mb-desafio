@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CSTV"
+rootProject.name = "MB Desafio"
 include(":app")

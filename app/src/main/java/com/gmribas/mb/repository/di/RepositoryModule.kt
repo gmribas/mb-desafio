@@ -2,6 +2,7 @@ package com.gmribas.mb.repository.di
 
 import com.gmribas.mb.data.datasource.cryptocurrency.ICryptocurrencyDataSource
 import com.gmribas.mb.data.datasource.exchange.IExchangeDataSource
+import com.gmribas.mb.data.datasource.exchangeassets.IExchangeAssetsDataSource
 import com.gmribas.mb.repository.cryptocurrency.CryptocurrencyRepository
 import com.gmribas.mb.repository.cryptocurrency.ICryptocurrencyRepository
 import com.gmribas.mb.repository.exchange.ExchangeRepository
@@ -9,6 +10,7 @@ import com.gmribas.mb.repository.exchange.IExchangeRepository
 import com.gmribas.mb.repository.mapper.CryptocurrencyListingMapper
 import com.gmribas.mb.repository.mapper.CryptocurrencyMapper
 import com.gmribas.mb.repository.mapper.ExchangeDetailMapper
+import com.gmribas.mb.repository.mapper.ExchangeAssetMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,15 +18,7 @@ import dagger.hilt.components.SingletonComponent
 
 @InstallIn(SingletonComponent::class)
 @Module
-object RepositoryModule {
-    
-    @Provides
-    fun provideCryptocurrencyMapper(): CryptocurrencyMapper = CryptocurrencyMapper()
-    
-    @Provides
-    fun provideCryptocurrencyListingMapper(
-        cryptocurrencyMapper: CryptocurrencyMapper
-    ): CryptocurrencyListingMapper = CryptocurrencyListingMapper(cryptocurrencyMapper)
+internal object RepositoryModule {
     
     @Provides
     fun provideCryptocurrencyRepository(
@@ -36,14 +30,15 @@ object RepositoryModule {
     )
     
     @Provides
-    fun provideExchangeDetailMapper(): ExchangeDetailMapper = ExchangeDetailMapper()
-    
-    @Provides
     fun provideExchangeRepository(
         dataSource: IExchangeDataSource,
-        mapper: ExchangeDetailMapper
+        assetsDataSource: IExchangeAssetsDataSource,
+        mapper: ExchangeDetailMapper,
+        assetMapper: ExchangeAssetMapper
     ): IExchangeRepository = ExchangeRepository(
-        dataSource,
-        mapper
+        dataSource = dataSource,
+        assetsDataSource = assetsDataSource,
+        mapper = mapper, 
+        assetMapper = assetMapper
     )
 }

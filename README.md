@@ -1,6 +1,6 @@
-# CSTV
+# Mercado Bitcoin Desafio
 
-A Counter-Strike tournament viewer app built with Android Jetpack Compose.
+Cryptocurrency Exchange viewer app built with Android Jetpack Compose.
 
 ## Added Libraries
 
