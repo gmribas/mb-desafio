@@ -1,7 +1,6 @@
 package com.gmribas.mb.ui.exchangedetails
 
 import androidx.lifecycle.SavedStateHandle
-import com.gmribas.mb.domain.GetCriptoDetailsUseCase
 import com.gmribas.mb.domain.UseCaseResult
 import com.gmribas.mb.repository.dto.ExchangeDetailDTO
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent

@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmribas.mb.domain.GetExchangeAssetsUseCase
-import com.gmribas.mb.domain.GetCriptoDetailsUseCase
 import com.gmribas.mb.domain.GetExchangeDetailsUseCase
 import com.gmribas.mb.domain.UseCaseResult
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
@@ -83,7 +82,6 @@ class ExchangeDetailsScreenViewModel @Inject constructor(
                         )
                     }
                     is UseCaseResult.Error -> {
-                        // Keep the exchange details but show empty assets on error
                         _state.value = currentState.copy(
                             assets = emptyList(),
                             assetsLoading = false

@@ -67,16 +67,3 @@ data class PlatformInfo(
     @SerializedName("token_address")
     val tokenAddress: String?
 )
-
-data class StatusResponse(
-    @SerializedName("timestamp")
-    val timestamp: String?,
-    @SerializedName("error_code")
-    val errorCode: Int?,
-    @SerializedName("error_message")
-    val errorMessage: String?,
-    @SerializedName("elapsed")
-    val elapsed: Int?,
-    @SerializedName("credit_count")
-    val creditCount: Int?
-)

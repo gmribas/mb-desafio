@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,7 +47,7 @@ fun ExchangeDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         text = stringResource(R.string.exchange_details_title),
                         style = MaterialTheme.typography.titleLarge,
@@ -78,16 +79,15 @@ fun ExchangeDetailsScreen(
                 is ExchangeDetailsScreenState.Loading -> {
                     LoadingContent(modifier = Modifier.fillMaxSize())
                 }
-                
+
                 is ExchangeDetailsScreenState.Error -> {
                     ErrorContent(
                         error = state.message,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                
+
                 is ExchangeDetailsScreenState.Success -> {
-                    println("HUE ${state.exchange}")
                     ExchangeDetailsContent(
                         exchange = state.exchange,
                         assets = state.assets,
@@ -145,10 +145,10 @@ private fun ExchangeDetailsContent(
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
-                    
+
                     Spacer(modifier = Modifier.height(SPACING_12))
                 }
-                
+
                 // Name
                 Text(
                     text = exchange.name.orEmpty(),
@@ -157,33 +157,14 @@ private fun ExchangeDetailsContent(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                
-                // Symbol
-//                Text(
-//                    text = exchange.symbol,
-//                    style = MaterialTheme.typography.titleMedium,
-//                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-//                )
-//
-//                // Category
-//                exchange.category?.let { category ->
-//                    Text(
-//                        text = category,
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-//                    )
-//                }
             }
         }
-        
-        // Assets Card
-        if (assets.isNotEmpty() || assetsLoading) {
-            AssetsCard(
-                assets = assets,
-                isLoading = assetsLoading
-            )
-        }
-        
+
+        AssetsCard(
+            assets = assets,
+            isLoading = assetsLoading
+        )
+
         // Description Card
         exchange.description?.let { description ->
             Card(
@@ -204,9 +185,9 @@ private fun ExchangeDetailsContent(
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.SemiBold
                     )
-                    
+
                     Spacer(modifier = Modifier.height(SPACING_8))
-                    
+
                     Text(
                         text = description,
                         style = MaterialTheme.typography.bodyMedium,
@@ -215,7 +196,7 @@ private fun ExchangeDetailsContent(
                 }
             }
         }
-        
+
         // Details Card
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -266,7 +247,7 @@ private fun ExchangeDetailsContent(
                         onClick = { onWebsiteClick(it.twitter) }
                     )
                 }
-                
+
                 // Date Launched
                 DetailRow(
                     label = stringResource(R.string.date_launched_label),
@@ -335,29 +316,27 @@ private fun AssetsCard(
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold
             )
-            
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SIZE_64),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(SIZE_36),
-                        color = MaterialTheme.colorScheme.primary
+
+            when {
+                isLoading -> {
+                    LoadingContent(
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
-            } else if (assets.isNotEmpty()) {
-                assets.take(5).forEach { asset ->
-                    AssetRow(asset = asset)
+
+                assets.isNotEmpty() -> {
+                    assets.take(5).forEach { asset ->
+                        AssetRow(asset = asset)
+                    }
                 }
-            } else {
-                Text(
-                    text = stringResource(R.string.no_assets_available),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+
+                else -> {
+                    Text(
+                        text = stringResource(R.string.no_assets_available),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
             }
         }
     }
@@ -369,43 +348,35 @@ private fun AssetRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(SPACING_12),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Asset logo
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(asset.logo)
-                    .build(),
-                contentDescription = asset.name,
-                modifier = Modifier
-                    .size(SIZE_36)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-            
-            Column {
-                Text(
-                    text = asset.currencyName,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = asset.symbol,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
-        }
-        
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(asset.logo)
+                .build(),
+            contentDescription = asset.name,
+            modifier = Modifier
+                .size(SIZE_36)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.width(SPACING_8))
+
         Text(
-            text = asset.priceUsd.formatAsUSD(),
+            modifier = Modifier.weight(1f),
+            text = asset.currency?.name.orEmpty(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Medium
+        )
+
+        val priceAndSymbol = remember {
+            asset.symbol.orEmpty() + asset.currency?.priceUsd?.formatAsUSD()
+        }
+
+        Text(
+            text = priceAndSymbol,
             style = MaterialTheme.typography.bodyMedium,
             color = AccentGreen,
             fontWeight = FontWeight.SemiBold

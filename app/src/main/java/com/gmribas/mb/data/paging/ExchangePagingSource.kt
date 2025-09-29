@@ -2,7 +2,6 @@ package com.gmribas.mb.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.gmribas.mb.data.datasource.cryptocurrency.CryptocurrencyDataSource
 import com.gmribas.mb.repository.dto.ExchangeDTO
 import com.gmribas.mb.repository.exchange.IExchangeRepository
 import kotlinx.coroutines.delay
@@ -13,8 +12,8 @@ class ExchangePagingSource(
 
     override fun getRefreshKey(state: PagingState<Int, ExchangeDTO>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(CryptocurrencyDataSource.PAGE_SIZE)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(CryptocurrencyDataSource.PAGE_SIZE)
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(PAGE_SIZE)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(PAGE_SIZE)
         }
     }
 
@@ -33,7 +32,7 @@ class ExchangePagingSource(
                 limit = limit
             )
 
-            val exchanges = response?.exchanges ?: emptyList()
+            val exchanges = response.exchanges ?: emptyList()
             val nextKey = if (exchanges.isEmpty() || exchanges.size < limit) {
                 null
             } else {
@@ -50,5 +49,9 @@ class ExchangePagingSource(
         } catch (exception: Exception) {
             LoadResult.Error(exception)
         }
+    }
+
+    companion object {
+        const val PAGE_SIZE = 20
     }
 }

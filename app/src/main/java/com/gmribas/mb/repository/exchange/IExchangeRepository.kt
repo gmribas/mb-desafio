@@ -1,7 +1,6 @@
 package com.gmribas.mb.repository.exchange
 
 import androidx.paging.PagingData
-import com.gmribas.mb.repository.dto.CriptoDetailDTO
 import com.gmribas.mb.repository.dto.ExchangeAssetDTO
 import com.gmribas.mb.repository.dto.ExchangeDTO
 import com.gmribas.mb.repository.dto.ExchangeListingDTO
@@ -20,4 +19,6 @@ interface IExchangeRepository {
     ): ExchangeListingDTO
 
     fun getExchangePagingData(): Flow<PagingData<ExchangeDTO>>
+
+    suspend fun getExchangeAssets(id: Int): List<ExchangeAssetDTO>
 }

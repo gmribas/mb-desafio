@@ -6,7 +6,6 @@ import com.gmribas.mb.data.model.CriptoInfoData
 import com.gmribas.mb.data.model.CriptoUrls
 import com.gmribas.mb.repository.cryptocurrency.CriptoRepository
 import com.gmribas.mb.repository.dto.ExchangeDetailDTO
-import com.gmribas.mb.repository.mapper.CriptoDetailMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
