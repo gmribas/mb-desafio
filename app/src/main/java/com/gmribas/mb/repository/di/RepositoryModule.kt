@@ -13,6 +13,8 @@ import com.gmribas.mb.repository.mapper.CryptocurrencyListingMapper
 import com.gmribas.mb.repository.mapper.CriptoDetailMapper
 import com.gmribas.mb.repository.mapper.ExchangeAssetMapper
 import com.gmribas.mb.repository.mapper.ExchangeListingMapper
+import com.gmribas.mb.repository.mapper.ExchangeMapMapper
+import com.gmribas.mb.repository.mapper.ExchangeMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,9 +49,11 @@ internal object RepositoryModule {
     @Provides
     fun provideExchangeRepository(
         dataSource: IExchangeDataSource,
-        listingMapper: ExchangeListingMapper
+        listingMapper: ExchangeListingMapper,
+        mapper: ExchangeMapper
     ): IExchangeRepository = ExchangeRepository(
         dataSource = dataSource,
-        listingMapper = listingMapper
+        listingMapper = listingMapper,
+        mapper = mapper
     )
 }

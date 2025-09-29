@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.gmribas.mb.domain.GetExchangeAssetsUseCase
 import com.gmribas.mb.domain.GetCriptoDetailsUseCase
 import com.gmribas.mb.domain.UseCaseResult
+import com.gmribas.mb.ui.criptodetails.model.CriptoDetailsScreenState
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +23,8 @@ class CriptoDetailsScreenViewModel @Inject constructor(
     private val getExchangeAssetsUseCase: GetExchangeAssetsUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<ExchangeDetailsScreenState>(ExchangeDetailsScreenState.Loading)
-    val state: StateFlow<ExchangeDetailsScreenState> = _state.asStateFlow()
+    private val _state = MutableStateFlow<CriptoDetailsScreenState>(CriptoDetailsScreenState.Loading)
+    val state: StateFlow<CriptoDetailsScreenState> = _state.asStateFlow()
 
     private val exchangeId: Int = savedStateHandle.get<Int>("id") ?: 0
 
@@ -31,7 +32,7 @@ class CriptoDetailsScreenViewModel @Inject constructor(
         if (exchangeId > 0) {
             loadExchangeDetails()
         } else {
-            _state.value = ExchangeDetailsScreenState.Error("Invalid exchange ID")
+            _state.value = CriptoDetailsScreenState.Error("Invalid exchange ID")
         }
     }
 
@@ -50,16 +51,16 @@ class CriptoDetailsScreenViewModel @Inject constructor(
 
     private fun loadExchangeDetails() {
         viewModelScope.launch {
-            _state.value = ExchangeDetailsScreenState.Loading
+            _state.value = CriptoDetailsScreenState.Loading
             
             when (val result = getCriptoDetailsUseCase(exchangeId)) {
                 is UseCaseResult.Success -> {
-                    _state.value = ExchangeDetailsScreenState.Success(result.data)
+                    _state.value = CriptoDetailsScreenState.Success(result.data)
                     // Load assets after exchange details
                     loadExchangeAssets()
                 }
                 is UseCaseResult.Error -> {
-                    _state.value = ExchangeDetailsScreenState.Error(
+                    _state.value = CriptoDetailsScreenState.Error(
                         result.error.message ?: "Unknown error occurred"
                     )
                 }
@@ -71,7 +72,7 @@ class CriptoDetailsScreenViewModel @Inject constructor(
         viewModelScope.launch {
             // Update state to show assets loading
             val currentState = _state.value
-            if (currentState is ExchangeDetailsScreenState.Success) {
+            if (currentState is CriptoDetailsScreenState.Success) {
                 _state.value = currentState.copy(assetsLoading = true)
                 
                 when (val result = getExchangeAssetsUseCase(exchangeId)) {

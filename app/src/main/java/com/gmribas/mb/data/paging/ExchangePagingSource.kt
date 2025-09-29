@@ -33,7 +33,7 @@ class ExchangePagingSource(
                 limit = limit
             )
 
-            val exchanges = response.exchanges
+            val exchanges = response?.exchanges ?: emptyList()
             val nextKey = if (exchanges.isEmpty() || exchanges.size < limit) {
                 null
             } else {

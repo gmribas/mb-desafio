@@ -26,10 +26,11 @@ import com.gmribas.mb.R
 import com.gmribas.mb.core.extensions.formatAsUSD
 import com.gmribas.mb.core.extensions.formatDateAdded
 import com.gmribas.mb.core.extensions.openBrowser
-import com.gmribas.mb.repository.dto.ExchangeAssetDTO
 import com.gmribas.mb.repository.dto.CriptoDetailDTO
+import com.gmribas.mb.repository.dto.ExchangeAssetDTO
 import com.gmribas.mb.ui.common.ErrorContent
 import com.gmribas.mb.ui.common.LoadingContent
+import com.gmribas.mb.ui.criptodetails.model.CriptoDetailsScreenState
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenState
 import com.gmribas.mb.ui.theme.*
@@ -37,7 +38,7 @@ import com.gmribas.mb.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CriptoDetailsScreen(
-    state: ExchangeDetailsScreenState,
+    state: CriptoDetailsScreenState,
     onEvent: (ExchangeDetailsScreenEvent) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -75,19 +76,19 @@ fun CriptoDetailsScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             when (state) {
-                is ExchangeDetailsScreenState.Loading -> {
+                is CriptoDetailsScreenState.Loading -> {
                     LoadingContent(modifier = Modifier.fillMaxSize())
                 }
-                
-                is ExchangeDetailsScreenState.Error -> {
+
+                is CriptoDetailsScreenState.Error -> {
                     ErrorContent(
                         error = state.message,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
                 
-                is ExchangeDetailsScreenState.Success -> {
-                    ExchangeDetailsContent(
+                is CriptoDetailsScreenState.Success -> {
+                    CriptoDetailsContent(
                         exchange = state.cripto,
                         assets = state.assets,
                         assetsLoading = state.assetsLoading,
@@ -102,7 +103,7 @@ fun CriptoDetailsScreen(
 }
 
 @Composable
-private fun ExchangeDetailsContent(
+private fun CriptoDetailsContent(
     exchange: CriptoDetailDTO,
     assets: List<ExchangeAssetDTO>,
     assetsLoading: Boolean,

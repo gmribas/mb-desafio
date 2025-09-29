@@ -47,7 +47,9 @@ fun MbNavigation(
             ExchangeListScreen(
                 exchangesPagingFlow = viewModel.exchangesPagingFlow,
                 onItemClick = { exchange ->
-                    navController.navigate(Screen.ExchangeDetails.createRoute(exchange.id))
+                    exchange.id?.let {
+                        navController.navigate(Screen.ExchangeDetails.createRoute(exchange.id))
+                    }
                 },
                 onFinish = onFinish
             )

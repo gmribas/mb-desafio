@@ -27,7 +27,7 @@ import com.gmribas.mb.core.extensions.formatAsUSD
 import com.gmribas.mb.core.extensions.formatDateAdded
 import com.gmribas.mb.core.extensions.openBrowser
 import com.gmribas.mb.repository.dto.ExchangeAssetDTO
-import com.gmribas.mb.repository.dto.CriptoDetailDTO
+import com.gmribas.mb.repository.dto.ExchangeDTO
 import com.gmribas.mb.ui.common.ErrorContent
 import com.gmribas.mb.ui.common.LoadingContent
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
@@ -87,8 +87,9 @@ fun ExchangeDetailsScreen(
                 }
                 
                 is ExchangeDetailsScreenState.Success -> {
+                    println("HUE ${state.exchange}")
                     ExchangeDetailsContent(
-                        exchange = state.cripto,
+                        exchange = state.exchange,
                         assets = state.assets,
                         assetsLoading = state.assetsLoading,
                         onWebsiteClick = { url ->
@@ -103,10 +104,10 @@ fun ExchangeDetailsScreen(
 
 @Composable
 private fun ExchangeDetailsContent(
-    exchange: CriptoDetailDTO,
+    exchange: ExchangeDTO,
     assets: List<ExchangeAssetDTO>,
     assetsLoading: Boolean,
-    onWebsiteClick: (String) -> Unit
+    onWebsiteClick: (String?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -137,7 +138,7 @@ private fun ExchangeDetailsContent(
                             .build(),
                         contentDescription = stringResource(
                             R.string.exchange_logo_description,
-                            exchange.name
+                            exchange.name.orEmpty()
                         ),
                         modifier = Modifier
                             .size(SIZE_80)
@@ -150,7 +151,7 @@ private fun ExchangeDetailsContent(
                 
                 // Name
                 Text(
-                    text = exchange.name,
+                    text = exchange.name.orEmpty(),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
@@ -158,20 +159,20 @@ private fun ExchangeDetailsContent(
                 )
                 
                 // Symbol
-                Text(
-                    text = exchange.symbol,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                )
-                
-                // Category
-                exchange.category?.let { category ->
-                    Text(
-                        text = category,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
+//                Text(
+//                    text = exchange.symbol,
+//                    style = MaterialTheme.typography.titleMedium,
+//                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+//                )
+//
+//                // Category
+//                exchange.category?.let { category ->
+//                    Text(
+//                        text = category,
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+//                    )
+//                }
             }
         }
         
@@ -235,40 +236,42 @@ private fun ExchangeDetailsContent(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
-                
-                // Website
-                exchange.websiteUrl?.let { url ->
+
+                exchange.urls?.let {
                     DetailRow(
                         label = stringResource(R.string.website_label),
-                        value = url,
+                        value = it.website,
                         isClickable = true,
-                        onClick = { onWebsiteClick(url) }
+                        onClick = { onWebsiteClick(it.website) }
                     )
-                }
-                
-                // Date Added
-                exchange.dateAdded?.let { date ->
+
                     DetailRow(
-                        label = stringResource(R.string.date_added_label),
-                        value = date.formatDateAdded()
+                        label = stringResource(R.string.chat_label),
+                        value = it.chat,
+                        isClickable = true,
+                        onClick = { onWebsiteClick(it.chat) }
+                    )
+
+                    DetailRow(
+                        label = stringResource(R.string.fee_label),
+                        value = it.fee,
+                        isClickable = true,
+                        onClick = { onWebsiteClick(it.fee) }
+                    )
+
+                    DetailRow(
+                        label = stringResource(R.string.twitter_label),
+                        value = it.twitter,
+                        isClickable = true,
+                        onClick = { onWebsiteClick(it.twitter) }
                     )
                 }
                 
                 // Date Launched
-                exchange.dateLaunched?.let { date ->
-                    DetailRow(
-                        label = stringResource(R.string.date_launched_label),
-                        value = date.formatDateAdded()
-                    )
-                }
-                
-                // Platform
-                exchange.platform?.let { platform ->
-                    DetailRow(
-                        label = stringResource(R.string.platform_label),
-                        value = platform
-                    )
-                }
+                DetailRow(
+                    label = stringResource(R.string.date_launched_label),
+                    value = exchange.dateLaunched?.formatDateAdded()
+                )
             }
         }
     }
@@ -277,32 +280,34 @@ private fun ExchangeDetailsContent(
 @Composable
 private fun DetailRow(
     label: String,
-    value: String,
+    value: String?,
     isClickable: Boolean = false,
     onClick: () -> Unit = {}
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (isClickable) Modifier.clickable { onClick() } else Modifier),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
-        
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (isClickable) AccentGreen else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isClickable) FontWeight.Medium else FontWeight.Normal,
-            textDecoration = if (isClickable) TextDecoration.Underline else TextDecoration.None,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+    value?.let {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(if (isClickable) Modifier.clickable { onClick() } else Modifier),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isClickable) AccentGreen else MaterialTheme.colorScheme.onSurface,
+                fontWeight = if (isClickable) FontWeight.Medium else FontWeight.Normal,
+                textDecoration = if (isClickable) TextDecoration.Underline else TextDecoration.None,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 

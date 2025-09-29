@@ -3,8 +3,8 @@ package com.gmribas.mb.data.api
 import com.gmribas.mb.data.model.CriptoDetailResponse
 import com.gmribas.mb.data.model.CryptocurrencyListingResponse
 import com.gmribas.mb.data.model.ExchangeAssetsResponse
-import com.gmribas.mb.data.model.ExchangeListingResponse
 import com.gmribas.mb.data.model.ExchangeMapListingResponse
+import com.gmribas.mb.data.model.ExchangeResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -16,6 +16,11 @@ interface CoinMarketCapApi {
         @Query("limit") limit: Int = 100,
         @Query("sort") sort: String = "volume_24h",
     ): ExchangeMapListingResponse
+
+    @GET("v1/exchange/info")
+    suspend fun getExchangeInfo(
+        @Query("id") id: Int,
+    ): ExchangeResponse
 
     @GET("v1/cryptocurrency/listings/latest")
     suspend fun getLatestListings(

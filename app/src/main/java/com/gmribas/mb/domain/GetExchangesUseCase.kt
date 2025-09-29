@@ -22,7 +22,7 @@ class GetExchangesUseCase @Inject constructor(
                 start = start,
                 limit = limit
             )
-            UseCaseResult.Success(result.exchanges)
+            UseCaseResult.Success(result.exchanges ?: emptyList())
         } catch (e: Exception) {
             UseCaseResult.Error(e)
         }

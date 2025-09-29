@@ -27,4 +27,7 @@
     <string name="platform_label">Platform</string>
     <string name="assets_label">Assets</string>
     <string name="no_assets_available">No assets available</string>
+    <string name="chat_label">Chat</string>
+    <string name="fee_label">Fee</string>
+    <string name="twitter_label">Twitter</string>
 </resources>

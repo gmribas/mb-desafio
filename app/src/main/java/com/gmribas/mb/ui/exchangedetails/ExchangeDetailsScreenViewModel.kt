@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmribas.mb.domain.GetExchangeAssetsUseCase
 import com.gmribas.mb.domain.GetCriptoDetailsUseCase
+import com.gmribas.mb.domain.GetExchangeDetailsUseCase
 import com.gmribas.mb.domain.UseCaseResult
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenState
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ExchangeDetailsScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getCriptoDetailsUseCase: GetCriptoDetailsUseCase,
+    private val getExchangeDetailsUseCase: GetExchangeDetailsUseCase,
     private val getExchangeAssetsUseCase: GetExchangeAssetsUseCase
 ) : ViewModel() {
 
@@ -52,7 +53,7 @@ class ExchangeDetailsScreenViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = ExchangeDetailsScreenState.Loading
             
-            when (val result = getCriptoDetailsUseCase(exchangeId)) {
+            when (val result = getExchangeDetailsUseCase(exchangeId)) {
                 is UseCaseResult.Success -> {
                     _state.value = ExchangeDetailsScreenState.Success(result.data)
                     // Load assets after exchange details

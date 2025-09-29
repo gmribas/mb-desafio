@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface IExchangeRepository {
 
+    suspend fun getInfo(
+        id: Int
+    ): ExchangeDTO
+
     suspend fun getLatestListings(
         start: Int,
         limit: Int,

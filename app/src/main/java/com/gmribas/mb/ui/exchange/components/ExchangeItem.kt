@@ -86,7 +86,7 @@ fun ExchangeItem(
                         .build(),
                     contentDescription = stringResource(
                         R.string.crypto_logo_description,
-                        exchange.name
+                        exchange.name.orEmpty()
                     ),
                     modifier = Modifier
                         .size(SIZE_40)
@@ -101,7 +101,7 @@ fun ExchangeItem(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = exchange.name,
+                        text = exchange.name.orEmpty(),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
@@ -122,7 +122,7 @@ fun ExchangeItem(
                             color = secondaryTextColor
                         )
                         Text(
-                            text = exchange.dateLaunched.formatDateAdded(),
+                            text = exchange.dateLaunched?.formatDateAdded().orEmpty(),
                             style = MaterialTheme.typography.bodySmall,
                             color = secondaryTextColor,
                             maxLines = 1,
@@ -137,7 +137,7 @@ fun ExchangeItem(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = exchange.spotVolumeUsd.formatAsUSD(),
+                    text = exchange.spotVolumeUsd?.formatAsUSD() ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium

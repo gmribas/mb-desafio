@@ -6,12 +6,12 @@ import com.gmribas.mb.repository.dto.ExchangeListingDTO
 import javax.inject.Inject
 
 class ExchangeListingMapper @Inject constructor(
-    private val exchangeMapper: ExchangeMapper
+    private val exchangeMapMapper: ExchangeMapMapper
 ) : IMapper<ExchangeMapListingResponse, ExchangeListingDTO> {
     
     override fun toDTO(model: ExchangeMapListingResponse): ExchangeListingDTO {
         return ExchangeListingDTO(
-            exchanges = model.data.map { exchangeMapper.toDTO(it) },
+            exchanges = model.data.map { exchangeMapMapper.toDTO(it) },
         )
     }
 
