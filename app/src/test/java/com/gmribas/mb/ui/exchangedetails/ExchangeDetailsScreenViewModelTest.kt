@@ -23,6 +23,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import com.gmribas.mb.domain.*
+import com.gmribas.mb.repository.dto.ExchangeAssetDTO
+import com.gmribas.mb.repository.dto.ExchangeDTO
 
 @ExperimentalCoroutinesApi
 class ExchangeDetailsScreenViewModelTest {
@@ -61,8 +63,8 @@ class ExchangeDetailsScreenViewModelTest {
     @Test
     fun `should emit success and load assets when exchange details are fetched`() = runTest {
         val exchangeId = 1
-        val exchangeDetails = mockk<Any>()
-        val assets = listOf(mockk<Any>())
+        val exchangeDetails = mockk<ExchangeDTO>()
+        val assets = listOf(mockk<ExchangeAssetDTO>())
 
         every { savedStateHandle.get<Int>("id") } returns exchangeId
         coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Success(exchangeDetails)
