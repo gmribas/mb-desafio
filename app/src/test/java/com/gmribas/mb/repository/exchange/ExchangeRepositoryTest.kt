@@ -1,11 +1,15 @@
 package com.gmribas.mb.repository.exchange
 
 import com.gmribas.mb.data.datasource.exchange.IExchangeDataSource
-import com.gmribas.mb.data.model.CriptoDetailResponse
-import com.gmribas.mb.data.model.CriptoInfoData
-import com.gmribas.mb.data.model.CriptoUrls
-import com.gmribas.mb.repository.cryptocurrency.CriptoRepository
-import com.gmribas.mb.repository.dto.ExchangeDetailDTO
+import com.gmribas.mb.data.datasource.exchangeassets.IExchangeAssetsDataSource
+import com.gmribas.mb.data.model.ExchangeResponse
+import com.gmribas.mb.data.model.ExchangeResponseData
+import com.gmribas.mb.data.model.Urls
+import com.gmribas.mb.repository.dto.ExchangeDTO
+import com.gmribas.mb.repository.dto.UrlsDTO
+import com.gmribas.mb.repository.mapper.ExchangeAssetMapper
+import com.gmribas.mb.repository.mapper.ExchangeListingMapper
+import com.gmribas.mb.repository.mapper.ExchangeMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -18,89 +22,86 @@ import org.junit.Test
 
 class ExchangeRepositoryTest {
 
-    private lateinit var dataSource: IExchangeDataSource
-    private lateinit var mapper: CriptoDetailMapper
-    private lateinit var repository: CriptoRepository
+    private val dataSource: IExchangeDataSource = mockk()
+    private val assetsDataSource: IExchangeAssetsDataSource = mockk()
+    private val listingMapper: ExchangeListingMapper = mockk()
+    private val mapper: ExchangeMapper = mockk()
+    private val assetMapper: ExchangeAssetMapper = mockk()
+    private lateinit var repository: ExchangeRepository
 
     @Before
     fun setUp() {
-        dataSource = mockk()
-        mapper = mockk()
-        repository = CriptoRepository(dataSource, mapper)
+        repository = ExchangeRepository(
+            dataSource = dataSource,
+            assetsDataSource = assetsDataSource,
+            listingMapper = listingMapper,
+            mapper = mapper,
+            assetMapper = assetMapper
+        )
     }
 
     @Test
     fun `getExchangeDetails should fetch data and map to DTO`() = runTest {
         // Given
         val exchangeId = 1
-        val criptoInfoData = CriptoInfoData(
+        val responseData = ExchangeResponseData(
             id = 1,
             name = "Binance",
-            symbol = "BNB",
             slug = "binance",
-            logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
-            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
-            urls = CriptoUrls(
+            urls = Urls(
                 website = listOf("https://binance.com"),
-                technicalDoc = null,
                 twitter = null,
-                reddit = null,
-                messageBoard = null,
-                announcement = null,
                 chat = null,
-                explorer = null,
-                sourceCode = null
+                fee = null
             ),
-            category = "Exchange",
-            platform = null
+            makerFee = 0.0,
+            takerFee = 0.0,
+            spotVolumeUsd = 0.0,
         )
         
-        val response = CriptoDetailResponse(
-            status = null,
-            data = mapOf("1" to criptoInfoData)
+        val response = ExchangeResponse(
+            data = mapOf("1" to responseData)
         )
         
-        val expectedDTO = ExchangeDetailDTO(
+        val expectedDTO = ExchangeDTO(
             id = 1,
             name = "Binance",
-            symbol = "BNB",
             slug = "binance",
             logo = "https://example.com/logo.png",
             description = "Leading cryptocurrency exchange",
-            dateAdded = "2017-07-01T00:00:00.000Z",
             dateLaunched = "2017-07-01T00:00:00.000Z",
-            websiteUrl = "https://binance.com",
-            category = "Exchange",
-            platform = null
+            spotVolumeUsd = 0.0,
+            makerFee = 0.0,
+            takerFee = 0.0,
+            urls = UrlsDTO(),
         )
         
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response
-        every { mapper.toDTO(criptoInfoData) } returns expectedDTO
+        every { mapper.toDTO(response) } returns expectedDTO
 
         // When
-        val result = repository.getCriptoDetails(exchangeId)
+        val result = repository.getInfo(exchangeId)
 
         // Then
         assertEquals(expectedDTO, result)
         coVerify(exactly = 1) { dataSource.getExchangeInfo(exchangeId) }
-        verify(exactly = 1) { mapper.toDTO(criptoInfoData) }
+        verify(exactly = 1) { mapper.toDTO(response) }
     }
 
     @Test(expected = Exception::class)
     fun `getExchangeDetails should throw exception when no data found`() = runTest {
         // Given
         val exchangeId = 1
-        val response = CriptoDetailResponse(
-            status = null,
+        val response = ExchangeResponse(
             data = emptyMap()
         )
         
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response
 
         // When
-        repository.getCriptoDetails(exchangeId)
+        repository.getInfo(exchangeId)
         
         // Then - exception is expected
     }
@@ -109,16 +110,13 @@ class ExchangeRepositoryTest {
     fun `getExchangeDetails should throw exception when data is null`() = runTest {
         // Given
         val exchangeId = 1
-        val response = CriptoDetailResponse(
-            status = null,
-            data = null
+        val response = ExchangeResponse(
+            data = emptyMap()
         )
         
         coEvery { dataSource.getExchangeInfo(exchangeId) } returns response
 
         // When
-        repository.getCriptoDetails(exchangeId)
-        
-        // Then - exception is expected
+        repository.getInfo(exchangeId)
     }
 }

@@ -1,8 +1,8 @@
 package com.gmribas.mb.ui.exchangedetails
 
 import androidx.lifecycle.SavedStateHandle
-import com.gmribas.mb.domain.UseCaseResult
-import com.gmribas.mb.repository.dto.ExchangeDetailDTO
+import com.gmribas.mb.domain.GetExchangeAssetsUseCase
+import com.gmribas.mb.domain.GetExchangeDetailsUseCase
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenState
 import io.mockk.coEvery
@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -21,26 +22,25 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import com.gmribas.mb.domain.*
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class ExchangeDetailsScreenViewModelTest {
 
-    private lateinit var getCriptoDetailsUseCase: GetCriptoDetailsUseCase
-    private lateinit var savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle = mockk(relaxed = true)
+    private val getExchangeDetailsUseCase: GetExchangeDetailsUseCase = mockk()
+    private val getExchangeAssetsUseCase: GetExchangeAssetsUseCase = mockk()
+
     private lateinit var viewModel: ExchangeDetailsScreenViewModel
-    private val testDispatcher = StandardTestDispatcher()
-    private val exchangeId = 1
 
     @Before
-    fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-        getExchangeDetailsUseCase = mockk()
-        savedStateHandle = mockk()
-        every { savedStateHandle.get<Int>("id") } returns exchangeId
-    }
-
-    private fun createViewModel(): ExchangeDetailsScreenViewModel {
-        return ExchangeDetailsScreenViewModel(savedStateHandle, getExchangeDetailsUseCase)
+    fun setup() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+        viewModel = ExchangeDetailsScreenViewModel(
+            savedStateHandle,
+            getExchangeDetailsUseCase,
+            getExchangeAssetsUseCase
+        )
     }
 
     @After
@@ -49,134 +49,52 @@ class ExchangeDetailsScreenViewModelTest {
     }
 
     @Test
-    fun `init should load exchange details on creation`() = runTest {
-        // Given
-        val exchangeDTO = createExchangeDTO()
-        coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Success(exchangeDTO)
-        
-        // When
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        
-        // Then
-        assertEquals(ExchangeDetailsScreenState.Success(exchangeDTO), viewModel.state.value)
-        coVerify(exactly = 1) { getExchangeDetailsUseCase(exchangeId) }
+    fun `should emit error when exchangeId is invalid`() = runTest {
+        every { savedStateHandle.get<Int>("id") } returns null
+
+        viewModel.onEvent(ExchangeDetailsScreenEvent.LoadExchangeDetails)
+
+        assert(viewModel.state.value is ExchangeDetailsScreenState.Error)
+        assert((viewModel.state.value as ExchangeDetailsScreenState.Error).message == "Invalid exchange ID")
     }
 
     @Test
-    fun `init should handle error when loading fails`() = runTest {
-        // Given
-        val errorMessage = "Failed to load exchange"
-        val exception = Exception(errorMessage)
-        coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Error(exception)
-        
-        // When
-        viewModel = createViewModel()
+    fun `should emit success and load assets when exchange details are fetched`() = runTest {
+        val exchangeId = 1
+        val exchangeDetails = mockk<Any>()
+        val assets = listOf(mockk<Any>())
+
+        every { savedStateHandle.get<Int>("id") } returns exchangeId
+        coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Success(exchangeDetails)
+        coEvery { getExchangeAssetsUseCase(exchangeId) } returns UseCaseResult.Success(assets)
+
+        viewModel.onEvent(ExchangeDetailsScreenEvent.LoadExchangeDetails)
+
         advanceUntilIdle()
-        
-        // Then
-        assertTrue(viewModel.state.value is ExchangeDetailsScreenState.Error)
-        assertEquals(errorMessage, (viewModel.state.value as ExchangeDetailsScreenState.Error).message)
-        coVerify(exactly = 1) { getExchangeDetailsUseCase(exchangeId) }
+
+        val state = viewModel.state.value
+        assert(state is ExchangeDetailsScreenState.Success)
+        val successState = state as ExchangeDetailsScreenState.Success
+        assert(successState.exchange == exchangeDetails)
+        assert(successState.assets == assets)
+        assert(!successState.assetsLoading)
     }
 
     @Test
-    fun `init should handle invalid exchange ID`() = runTest {
-        // Given
-        every { savedStateHandle.get<Int>("id") } returns 0
-        
-        // When
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        
-        // Then
-        assertTrue(viewModel.state.value is ExchangeDetailsScreenState.Error)
-        assertEquals("Invalid exchange ID", (viewModel.state.value as ExchangeDetailsScreenState.Error).message)
-        coVerify(exactly = 0) { getExchangeDetailsUseCase(any()) }
-    }
+    fun `should emit error when exchange details fail`() = runTest {
+        val exchangeId = 1
+        val error = Throwable("Network error")
 
-    @Test
-    fun `RetryLoad event should reload exchange details`() = runTest {
-        // Given
-        val exchangeDTO = createExchangeDTO()
-        coEvery { getExchangeDetailsUseCase(exchangeId) } returnsMany listOf(
-            UseCaseResult.Error(Exception("First attempt failed")),
-            UseCaseResult.Success(exchangeDTO)
-        )
-        
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        
-        // When - trigger retry
-        viewModel.onEvent(ExchangeDetailsScreenEvent.RetryLoad)
-        advanceUntilIdle()
-        
-        // Then
-        assertEquals(ExchangeDetailsScreenState.Success(exchangeDTO), viewModel.state.value)
-        coVerify(exactly = 2) { getExchangeDetailsUseCase(exchangeId) }
-    }
+        every { savedStateHandle.get<Int>("id") } returns exchangeId
+        coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Error(error)
 
-    @Test
-    fun `RetryLoad event should not reload if invalid ID`() = runTest {
-        // Given
-        every { savedStateHandle.get<Int>("id") } returns 0
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        
-        // When
-        viewModel.onEvent(ExchangeDetailsScreenEvent.RetryLoad)
-        advanceUntilIdle()
-        
-        // Then
-        assertTrue(viewModel.state.value is ExchangeDetailsScreenState.Error)
-        coVerify(exactly = 0) { getExchangeDetailsUseCase(any()) }
-    }
+        viewModel.onEvent(ExchangeDetailsScreenEvent.LoadExchangeDetails)
 
-    @Test
-    fun `OpenWebsite event should not change state`() = runTest {
-        // Given
-        val url = "https://binance.com"
-        val exchangeDTO = createExchangeDTO()
-        coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Success(exchangeDTO)
-        viewModel = createViewModel()
         advanceUntilIdle()
-        
-        val initialState = viewModel.state.value
-        
-        // When
-        viewModel.onEvent(ExchangeDetailsScreenEvent.OpenWebsite(url))
-        advanceUntilIdle()
-        
-        // Then
-        assertEquals(initialState, viewModel.state.value)
-    }
 
-    @Test
-    fun `init should handle null error message`() = runTest {
-        // Given
-        val exception = Exception(null as String?)
-        coEvery { getExchangeDetailsUseCase(exchangeId) } returns UseCaseResult.Error(exception)
-        
-        // When
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        
-        // Then
-        assertTrue(viewModel.state.value is ExchangeDetailsScreenState.Error)
-        assertEquals("Unknown error occurred", (viewModel.state.value as ExchangeDetailsScreenState.Error).message)
+        val state = viewModel.state.value
+        assert(state is ExchangeDetailsScreenState.Error)
+        assert((state as ExchangeDetailsScreenState.Error).message == "Network error")
     }
-    
-    private fun createExchangeDTO() = ExchangeDetailDTO(
-        id = 1,
-        name = "Binance",
-        symbol = "BNB",
-        slug = "binance",
-        logo = "https://example.com/logo.png",
-        description = "Leading cryptocurrency exchange",
-        dateAdded = "2017-07-01T00:00:00.000Z",
-        dateLaunched = "2017-07-01T00:00:00.000Z",
-        websiteUrl = "https://binance.com",
-        category = "Exchange",
-        platform = null
-    )
 }
+

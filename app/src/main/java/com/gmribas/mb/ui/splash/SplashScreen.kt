@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmribas.mb.R
+import com.gmribas.mb.ui.theme.OrangeMB
 import kotlinx.coroutines.delay
 
 @Composable
@@ -31,7 +32,7 @@ fun SplashScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(OrangeMB),
         contentAlignment = Alignment.Center
     ) {
         Column(

@@ -1,6 +1,6 @@
 package com.gmribas.mb.ui.exchange.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,22 +30,13 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.gmribas.mb.R
-import com.gmribas.mb.core.extensions.formatAsPercentage
 import com.gmribas.mb.core.extensions.formatAsUSD
 import com.gmribas.mb.core.extensions.formatDateAdded
-import com.gmribas.mb.core.extensions.formatVolume
-import com.gmribas.mb.ui.theme.AccentGreen
-import com.gmribas.mb.ui.theme.AccentRed
-import com.gmribas.mb.ui.theme.SIZE_4
+import com.gmribas.mb.repository.dto.ExchangeDTO
 import com.gmribas.mb.ui.theme.SIZE_12
 import com.gmribas.mb.ui.theme.SIZE_40
 import com.gmribas.mb.ui.theme.SIZE_80
-import com.gmribas.mb.ui.theme.SPACING_8
 import com.gmribas.mb.ui.theme.SPACING_12
-import com.gmribas.mb.ui.theme.SPACING_16
-import com.gmribas.mb.ui.theme.TextSecondary
-import androidx.compose.foundation.isSystemInDarkTheme
-import com.gmribas.mb.repository.dto.ExchangeDTO
 
 @Composable
 fun ExchangeItem(
@@ -59,6 +50,7 @@ fun ExchangeItem(
     Card(
         onClick = onClick,
         modifier = Modifier
+            .testTag("ExchangeItem")
             .fillMaxWidth()
             .height(SIZE_80),
         elevation = CardDefaults.cardElevation(defaultElevation = cardElevation),

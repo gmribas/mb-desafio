@@ -34,7 +34,6 @@ class AssetsListScreenViewModel @Inject constructor(
 
     internal fun processAssetsJson() = viewModelScope.launch {
         val assetsJson = savedStateHandle.get<String>("assetsJson")
-        println("HUE val assetsJson = savedStateHandle.get<String>(\"assetsJson\") = $assetsJson")
         assetsJson?.let {
             val decoded = URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
             val type = object : TypeToken<List<ExchangeAssetDTO>>() {}.type

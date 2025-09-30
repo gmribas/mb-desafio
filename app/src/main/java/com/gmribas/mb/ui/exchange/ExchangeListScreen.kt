@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.BackHandler
+import androidx.compose.ui.platform.testTag
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -57,6 +58,7 @@ fun ExchangeListScreen(
                 .padding(horizontal = SPACING_24, vertical = SPACING_20)
         ) {
             Text(
+                modifier = Modifier.testTag("title"),
                 text = stringResource(R.string.exchange_title),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onBackground
@@ -87,7 +89,7 @@ fun ExchangeListScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(SPACING_16),
                         contentPadding = PaddingValues(horizontal = SPACING_16),
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.testTag("LazyColumn").fillMaxSize()
                     ) {
                         items(
                             count = lazyPagingItems.itemCount,
@@ -107,7 +109,12 @@ fun ExchangeListScreen(
                         item {
                             when (lazyPagingItems.loadState.append) {
                                 is LoadState.Loading -> {
-                                    LoadingContent(modifier = Modifier.fillMaxWidth().padding(vertical = SPACING_16))
+                                    LoadingContent(
+                                        modifier = Modifier
+                                            .testTag("loading")
+                                            .fillMaxWidth()
+                                            .padding(vertical = SPACING_16)
+                                    )
                                 }
                                 is LoadState.Error -> {
                                     val error = lazyPagingItems.loadState.append as LoadState.Error
