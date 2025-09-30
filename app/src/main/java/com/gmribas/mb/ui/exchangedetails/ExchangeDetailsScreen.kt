@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,13 +23,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.gmribas.mb.R
-import com.gmribas.mb.core.extensions.formatAsUSD
 import com.gmribas.mb.core.extensions.formatDateAdded
 import com.gmribas.mb.core.extensions.openBrowser
 import com.gmribas.mb.repository.dto.ExchangeAssetDTO
 import com.gmribas.mb.repository.dto.ExchangeDTO
+import com.gmribas.mb.ui.common.AssetRow
 import com.gmribas.mb.ui.common.ErrorContent
 import com.gmribas.mb.ui.common.LoadingContent
+import com.gmribas.mb.ui.common.TopAppBarMB
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenEvent
 import com.gmribas.mb.ui.exchangedetails.model.ExchangeDetailsScreenState
 import com.gmribas.mb.ui.theme.*
@@ -40,32 +40,20 @@ import com.gmribas.mb.ui.theme.*
 fun ExchangeDetailsScreen(
     state: ExchangeDetailsScreenState,
     onEvent: (ExchangeDetailsScreenEvent) -> Unit,
+    viewAllAssetsClick: (List<ExchangeAssetDTO>) -> Unit,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        onEvent(ExchangeDetailsScreenEvent.LoadExchangeDetails)
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.exchange_details_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back_button_description),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            TopAppBarMB(
+                title = stringResource(R.string.exchange_details_title),
+                onBackClick = onBackClick
             )
         }
     ) { paddingValues ->
@@ -94,6 +82,9 @@ fun ExchangeDetailsScreen(
                         assetsLoading = state.assetsLoading,
                         onWebsiteClick = { url ->
                             context.openBrowser(url)
+                        },
+                        viewAllAssetsClick = {
+                            viewAllAssetsClick(state.assets)
                         }
                     )
                 }
@@ -107,7 +98,8 @@ private fun ExchangeDetailsContent(
     exchange: ExchangeDTO,
     assets: List<ExchangeAssetDTO>,
     assetsLoading: Boolean,
-    onWebsiteClick: (String?) -> Unit
+    onWebsiteClick: (String?) -> Unit,
+    viewAllAssetsClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -162,7 +154,8 @@ private fun ExchangeDetailsContent(
 
         AssetsCard(
             assets = assets,
-            isLoading = assetsLoading
+            isLoading = assetsLoading,
+            viewAllClick = viewAllAssetsClick
         )
 
         // Description Card
@@ -295,7 +288,8 @@ private fun DetailRow(
 @Composable
 private fun AssetsCard(
     assets: List<ExchangeAssetDTO>,
-    isLoading: Boolean
+    isLoading: Boolean,
+    viewAllClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -325,8 +319,15 @@ private fun AssetsCard(
                 }
 
                 assets.isNotEmpty() -> {
-                    assets.take(5).forEach { asset ->
-                        AssetRow(asset = asset)
+                    val localItems = remember {
+                        assets.take(5)
+                    }
+                    Column {
+                        localItems.forEach { asset ->
+                            AssetRow(asset = asset)
+                            HorizontalDivider(thickness = SIZE_1)
+                            Spacer(modifier = Modifier.height(SPACING_8))
+                        }
                     }
                 }
 
@@ -338,48 +339,22 @@ private fun AssetsCard(
                     )
                 }
             }
+
+            if (assets.size > 5) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AccentGreen
+                    ),
+                    onClick = viewAllClick
+                ) {
+                    Text(
+                        text = stringResource(R.string.view_all_assets_available),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
         }
-    }
-}
-
-@Composable
-private fun AssetRow(
-    asset: ExchangeAssetDTO
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(asset.logo)
-                .build(),
-            contentDescription = asset.name,
-            modifier = Modifier
-                .size(SIZE_36)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.width(SPACING_8))
-
-        Text(
-            modifier = Modifier.weight(1f),
-            text = asset.currency?.name.orEmpty(),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Medium
-        )
-
-        val priceAndSymbol = remember {
-            asset.symbol.orEmpty() + asset.currency?.priceUsd?.formatAsUSD()
-        }
-
-        Text(
-            text = priceAndSymbol,
-            style = MaterialTheme.typography.bodyMedium,
-            color = AccentGreen,
-            fontWeight = FontWeight.SemiBold
-        )
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val SIZE_0 = 0.dp
+val SIZE_1 = 1.dp
 val SIZE_4 = 4.dp
 val SIZE_8 = 8.dp
 val SIZE_12 = 12.dp

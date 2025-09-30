@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExchangeDetailsScreenViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val getExchangeDetailsUseCase: GetExchangeDetailsUseCase,
     private val getExchangeAssetsUseCase: GetExchangeAssetsUseCase
 ) : ViewModel() {
@@ -25,30 +25,21 @@ class ExchangeDetailsScreenViewModel @Inject constructor(
     private val _state = MutableStateFlow<ExchangeDetailsScreenState>(ExchangeDetailsScreenState.Loading)
     val state: StateFlow<ExchangeDetailsScreenState> = _state.asStateFlow()
 
-    private val exchangeId: Int = savedStateHandle.get<Int>("id") ?: 0
-
-    init {
-        if (exchangeId > 0) {
-            loadExchangeDetails()
-        } else {
-            _state.value = ExchangeDetailsScreenState.Error("Invalid exchange ID")
-        }
-    }
-
     fun onEvent(event: ExchangeDetailsScreenEvent) {
         when (event) {
-            is ExchangeDetailsScreenEvent.RetryLoad -> {
+            is ExchangeDetailsScreenEvent.LoadExchangeDetails -> {
+                val exchangeId: Int = savedStateHandle.get<Int>("id") ?: 0
+
                 if (exchangeId > 0) {
-                    loadExchangeDetails()
+                    loadExchangeDetails(exchangeId)
+                } else {
+                    _state.value = ExchangeDetailsScreenState.Error("Invalid exchange ID")
                 }
-            }
-            is ExchangeDetailsScreenEvent.OpenWebsite -> {
-                // Handle in UI layer with Intent
             }
         }
     }
 
-    private fun loadExchangeDetails() {
+    internal fun loadExchangeDetails(exchangeId: Int) {
         viewModelScope.launch {
             _state.value = ExchangeDetailsScreenState.Loading
             
@@ -56,7 +47,7 @@ class ExchangeDetailsScreenViewModel @Inject constructor(
                 is UseCaseResult.Success -> {
                     _state.value = ExchangeDetailsScreenState.Success(result.data)
                     // Load assets after exchange details
-                    loadExchangeAssets()
+                    loadExchangeAssets(exchangeId)
                 }
                 is UseCaseResult.Error -> {
                     _state.value = ExchangeDetailsScreenState.Error(
@@ -67,7 +58,7 @@ class ExchangeDetailsScreenViewModel @Inject constructor(
         }
     }
     
-    private fun loadExchangeAssets() {
+    internal fun loadExchangeAssets(exchangeId: Int) {
         viewModelScope.launch {
             // Update state to show assets loading
             val currentState = _state.value

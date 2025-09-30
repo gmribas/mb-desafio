@@ -16,7 +16,7 @@
     <string name="date_added">Lancada</string>
 
     <!-- Exchange Details Screen -->
-    <string name="exchange_details_title">Cryptocurrency Details</string>
+    <string name="exchange_details_title">Exchange Details</string>
     <string name="exchange_logo_description">%1$s logo</string>
     <string name="back_button_description">Go back</string>
     <string name="description_label">Description</string>
@@ -30,4 +30,8 @@
     <string name="chat_label">Chat</string>
     <string name="fee_label">Fee</string>
     <string name="twitter_label">Twitter</string>
+    <string name="view_all_assets_available">View All</string>
+
+    <!-- Assets List -->
+    <string name="assets_title">Assets</string>
 </resources>
